@@ -36,7 +36,7 @@ void showYellow() {
   digitalWrite(LED_RED, LOW);
 }
 
-void showGreen(unsigned long ms = 800) {
+void showGreen(unsigned long ms = 3000) {
   digitalWrite(LED_YELLOW, LOW);
   digitalWrite(LED_GREEN, HIGH);
   digitalWrite(LED_RED, LOW);
@@ -44,7 +44,7 @@ void showGreen(unsigned long ms = 800) {
   setAllOff();
 }
 
-void showRed(unsigned long ms = 1200) {
+void showRed(unsigned long ms = 3000) {
   digitalWrite(LED_YELLOW, LOW);
   digitalWrite(LED_GREEN, LOW);
   digitalWrite(LED_RED, HIGH);

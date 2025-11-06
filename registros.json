@@ -1,34 +1,4 @@
 {
-  "71E125A3": {
-    "2025-10-29": {
-      "entrada": "10:44",
-      "saida_intervalo": "10:46",
-      "volta_intervalo": "10:50",
-      "saida": "11:24"
-    },
-    "2025-10-30": {
-      "entrada": "09:03",
-      "saida_intervalo": "09:05",
-      "volta_intervalo": "09:14"
-    },
-    "2025-11-05": {
-      "entrada": "09:34",
-      "saida_intervalo": "09:58",
-      "volta_intervalo": "10:01",
-      "saida": "10:16"
-    },
-    "2025-11-04": {
-      "entrada": "09:03",
-      "saida_intervalo": "09:05",
-      "volta_intervalo": "09:14"
-    },
-    "2025-11-03": {
-      "entrada": "09:34",
-      "saida_intervalo": "09:58",
-      "volta_intervalo": "10:01",
-      "saida": "10:16"
-    }
-  },
   "54F7F704": {
     "2025-10-30": {
       "entrada": "09:01",
@@ -41,6 +11,11 @@
       "saida_intervalo": "09:37",
       "volta_intervalo": "09:58",
       "saida": "10:01"
+    }
+  },
+  "71E125A3": {
+    "2025-11-05": {
+      "entrada": "23:42"
     }
   }
 }
