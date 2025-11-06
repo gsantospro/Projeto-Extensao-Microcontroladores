@@ -1,4 +1,4 @@
-# app.py
+# IMPORTAÇÕES E BIBLIOTECAS
 import os, json, time, re, threading, queue
 from datetime import datetime, timedelta
 from nicegui import ui, app
@@ -9,9 +9,9 @@ from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
 
-# ===================== Config & Arquivos =====================
-ARQ_FUNC = "funcionarios.json"  # {UID: nome}
-ARQ_REG  = "registros.json"     # {UID: {YYYY-MM-DD: {evento: "HH:MM"}}}
+# CONFIGURAÇÕES E CONSTANTES
+ARQ_FUNC = "funcionarios.json"
+ARQ_REG  = "registros.json"
 
 BAUDRATE = 9600
 TIMEOUT = 1
@@ -19,24 +19,22 @@ EVENTOS = ["entrada", "saida_intervalo", "volta_intervalo", "saida"]
 MIN_GAP_SECONDS = 60
 HEX_RE = re.compile(r'^[0-9A-F]+$')
 
-# ===================== Estado Global =====================
+# VARIAVEIS GLOBAIS
 funcionarios = {}
 registros = {}
-ultimas_batidas = {}            # {uid: timestamp}
+ultimas_batidas = {}
 serial_thread = None
 serial_stop_flag = threading.Event()
 serial_port = None
 serial_connected = False
 serial_queue = queue.Queue()    # ('ok'|'err'|'log'|'uid_captured', payload)
 PORTA_ATUAL = None
-last_export_path = None  # caminho absoluto do último .xlsx gerado
+last_export_path = None
 
-
-# --- Captura de UID para cadastro ---
 capture_uid_mode = False
 capture_lock = threading.Lock()
 
-# ===================== Utilidades =====================
+# FUNÇÕES AUXILIARES
 def carregar_json(path, default):
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
@@ -104,7 +102,7 @@ def registrar_batida(uid):
 def listar_portas():
     return [p.device for p in serial.tools.list_ports.comports()]
 
-# ===================== Helpers Excel =====================
+# HELPERS PARA EXPORTAÇÃO EXCEL
 def _parse_hhmm(s):
     try:
         return datetime.strptime(s, "%H:%M").time()
@@ -266,7 +264,7 @@ def exportar_mes_xlsx(ano_mes: str, funcionarios: dict, registros: dict, eventos
     wb.save(caminho)
     return caminho
 
-# ===================== Thread da Serial =====================
+# FUNÇÕES DE THREAD SERIAL
 def serial_worker(port_name):
     global serial_connected, serial_port, capture_uid_mode
     try:
