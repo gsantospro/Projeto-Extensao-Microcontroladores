@@ -8,6 +8,7 @@ from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
+
 # ===================== Config & Arquivos =====================
 ARQ_FUNC = "funcionarios.json"  # {UID: nome}
 ARQ_REG  = "registros.json"     # {UID: {YYYY-MM-DD: {evento: "HH:MM"}}}
@@ -28,6 +29,8 @@ serial_port = None
 serial_connected = False
 serial_queue = queue.Queue()    # ('ok'|'err'|'log'|'uid_captured', payload)
 PORTA_ATUAL = None
+last_export_path = None  # caminho absoluto do último .xlsx gerado
+
 
 # --- Captura de UID para cadastro ---
 capture_uid_mode = False
@@ -569,24 +572,40 @@ with ui.tab_panels(tabs, value='Conexão').classes('w-full'):
 
         mes_options, mes_default = coletar_meses_disponiveis()
         mes_select = ui.select(options=mes_options, value=mes_default, label='Mês (MM/YYYY)').classes('min-w-[200px]')
-        last_export_link = ui.link('', '#', new_tab=True)
+        abrir_btn = ui.button('Abrir no Excel', icon='folder_open', on_click=lambda: abrir_no_excel())
+        abrir_btn.disable()  # começa desativado
+        
+        def abrir_no_excel():
+            import os, subprocess, sys
+            global last_export_path
+            if not last_export_path or not os.path.exists(last_export_path):
+                ui.notify('Nenhum arquivo exportado ainda ou arquivo não encontrado.', type='warning')
+                return
+            try:
+                if sys.platform.startswith("win"):
+                    os.startfile(last_export_path)
+                elif sys.platform == "darwin":
+                    subprocess.Popen(["open", last_export_path])
+                else:
+                    subprocess.Popen(["xdg-open", last_export_path])
+                ui.notify(f'Abrindo: {os.path.basename(last_export_path)}', type='positive')
+            except Exception as e:
+                ui.notify(f'Erro ao abrir: {e}', type='negative')
 
         def exportar_xlsx_ui():
-            mes_iso = (mes_select.value or '').strip()
+            import os, sys, subprocess
+            global last_export_path
+            mes_iso = (mes_select.value or '').strip()   # já é 'YYYY-MM'
             try:
                 caminho = exportar_mes_xlsx(mes_iso, funcionarios, registros, EVENTOS)
                 ui.notify(f'Arquivo gerado: {caminho}', type='positive')
 
-                # 1) download imediato pelo botão
+                # dispara o download pelo navegador (mantém o comportamento atual)
                 ui.download(caminho)
 
-                # 2) link para abrir em nova aba (sem forçar download)
-                url = f"/data/{caminho.replace(os.sep, '/')}"
-                fname = os.path.basename(caminho)
-                last_export_link.text = f"Abrir {fname}"
-                last_export_link.href = url
-                # remova qualquer atributo 'download' que tenha ficado
-                last_export_link.props(remove='download')
+                # guarda caminho absoluto para o botão "Abrir no Excel"
+                last_export_path = os.path.abspath(caminho)
+                abrir_btn.enable()  # habilita o botão agora que existe um arquivo
 
             except Exception as e:
                 ui.notify(f'Erro: {e}', type='negative')
